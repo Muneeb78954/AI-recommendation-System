@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Recommendation System</title>
+<style>
+:root{
+ --bg:#0f172a;
+ --card:#111827;
+ --card2:#1f2937;
+ --text:#f8fafc;
+ --muted:#94a3b8;
+ --accent:#6366f1;
+ --success:#22c55e;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Inter,Arial,sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:var(--text);
+padding:20px;
+}
+.container{max-width:1000px;margin:auto}
+.header{text-align:center;margin-bottom:25px}
+.card{
+background:rgba(17,24,39,.9);
+backdrop-filter:blur(10px);
+border-radius:18px;
+padding:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.tab{
+padding:10px 16px;border:none;border-radius:10px;
+cursor:pointer;background:var(--card2);color:white
+}
+.tab.active{background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
+.chip{
+padding:8px 12px;border-radius:999px;
+background:#334155;cursor:pointer
+}
+.chip.selected{background:var(--accent)}
+.moods{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.mood{
+background:#1e293b;padding:12px;border-radius:12px;cursor:pointer
+}
+.mood.selected{outline:2px solid var(--accent)}
+button.main{
+width:100%;padding:14px;margin-top:20px;
+background:var(--accent);border:none;border-radius:12px;
+color:white;font-size:16px;cursor:pointer
+}
+.results{display:grid;gap:12px;margin-top:20px}
+.rec{
+background:#1e293b;padding:15px;border-radius:12px
+}
+.score{
+float:right;background:var(--success);
+padding:4px 10px;border-radius:999px
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>✨ AI Recommendation System</h1>
+<p>Enhanced UI/UX + Fully Working Offline Demo</p>
+</div>
+
+<div class="card">
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+<button class="main" onclick="recommend()">Get Recommendations</button>
+<div class="results" id="results"></div>
+</div>
+</div>
+
+<script>
+const data={
+movies:{
+genres:["Action","Sci‑Fi","Drama","Comedy","Thriller"],
+moods:["Exciting","Emotional","Mind-Bending"],
+items:[
+{title:"Interstellar",genre:"Sci‑Fi",mood:"Mind-Bending"},
+{title:"Whiplash",genre:"Drama",mood:"Emotional"},
+{title:"Mad Max Fury Road",genre:"Action",mood:"Exciting"},
+{title:"Arrival",genre:"Sci‑Fi",mood:"Mind-Bending"}
+]},
+books:{
+genres:["Fantasy","History","Mystery","Sci‑Fi"],
+moods:["Learning","Escapism","Intense"],
+items:[
+{title:"Dune",genre:"Sci‑Fi",mood:"Escapism"},
+{title:"Sapiens",genre:"History",mood:"Learning"},
+{title:"The Hobbit",genre:"Fantasy",mood:"Escapism"},
+{title:"Gone Girl",genre:"Mystery",mood:"Intense"}
+]}
+};
+
+let active="movies";
+let selectedGenre="";
+let selectedMood="";
+
+function renderTabs(){
+document.getElementById("tabs").innerHTML=Object.keys(data)
+.map(x=>`<button class="tab ${x===active?'active':''}" onclick="switchTab('${x}')">${x}</button>`).join('');
+}
+
+function switchTab(tab){active=tab;render();}
+
+function render(){
+renderTabs();
+const d=data[active];
+document.getElementById("content").innerHTML=`
+<h3>Genres</h3>
+<div class="chips">
+${d.genres.map(g=>`<div class="chip ${selectedGenre===g?'selected':''}" onclick="pickGenre('${g}')">${g}</div>`).join('')}
+</div>
+<h3>Mood</h3>
+<div class="moods">
+${d.moods.map(m=>`<div class="mood ${selectedMood===m?'selected':''}" onclick="pickMood('${m}')">${m}</div>`).join('')}
+</div>`;
+}
+
+function pickGenre(g){selectedGenre=g;render();}
+function pickMood(m){selectedMood=m;render();}
+
+function recommend(){
+const list=data[active].items.filter(x=>
+(!selectedGenre || x.genre===selectedGenre) &&
+(!selectedMood || x.mood===selectedMood)
+);
+
+document.getElementById("results").innerHTML=
+(list.length?list:data[active].items).map(r=>`
+<div class="rec">
+<span class="score">${80+Math.floor(Math.random()*20)}%</span>
+<h3>${r.title}</h3>
+<p>${r.genre} • ${r.mood}</p>
+</div>`).join('');
+}
+
+render();
+</script>
+</body>
+</html>
